@@ -27,7 +27,7 @@ for jsonFileName in jsonFiles:
     jsonFile.close()
     t = t + c
 
-df = DataFrame({'id': ts.values(), 'texto': ts.keys()})
+df = DataFrame({'id': ts.values(), 'classe': [None] * len(ts), 'texto': ts.keys()})
 df.to_excel(f'{path}.xlsx', sheet_name='sheet1', index=False)
 
 # csvFile = open(f'{path}.csv', 'w')
