@@ -26,6 +26,7 @@ for index, row in xlsFile.iterrows():
 
     # remover essa linha quando houver classificacao pelo especialista
     classe = random.choice(['nocivo', 'inofensivo', 'geral'])
+    
     category = random.choice([train, test])
     fpath = join(category, classe)
     if not isdir(fpath):
