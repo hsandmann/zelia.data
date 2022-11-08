@@ -1,11 +1,13 @@
 import pandas as pd
-import random
 import os
 from os.path import isdir, join
+import subprocess
+import tarfile
 
+pathname = 'suicidedb'
+path = join(pathname)
 
-path = join('suicidedb')
-
+print(f'removendo: {pathname}')
 if isdir(path):
     for root, dirs, files in os.walk(path, topdown=False):
         for name in files:
@@ -20,21 +22,34 @@ os.mkdir(test)
 train = join(path, 'train')
 os.mkdir(train)
 
-xlsFile = pd.read_excel('tweets2019.2.xlsx', sheet_name='sheet1')
+xlsFiles = {
+    'tweets_normalizados_2019.xlsx': {'sheetname': '2019_normalizados', 'category': train},
+    'tweets_normalizados_2020.xlsx': {'sheetname': '2020_normalizados', 'category': test},
+}
 
-for index, row in xlsFile.iterrows():
+labels = ['nocivo', 'protetor', 'geral']
 
-    # remover essa linha quando houver classificacao pelo especialista
-    classe = random.choice(['nocivo', 'inofensivo', 'geral'])
-    
-    category = random.choice([train, test])
-    fpath = join(category, classe)
-    if not isdir(fpath):
-        os.mkdir(fpath)
+for filename, sn in xlsFiles.items():
+    print(f'{filename}/{sn["sheetname"]} to {sn["category"]}')
+    xlsFile = pd.read_excel(filename, sheet_name=sn['sheetname'])
+    for index, row in xlsFile.iterrows():
+        idx_classe = row['classe']
+        if idx_classe != idx_classe:
+            continue
+        
+        classe = labels[int(idx_classe) - 1]
+        category = sn['category']
+        fpath = join(category, classe)
+        if not isdir(fpath):
+            os.mkdir(fpath)
 
-    id = row['id']
-    texto = str(row['texto'])
+        id = row['id']
+        texto = str(row['texto'])
 
-    file = open(join(fpath, f'{str(id)}.txt'), 'w')
-    file.write(texto)
-    file.close()
+        file = open(join(fpath, f'{str(id)}.txt'), 'w')
+        file.write(texto)
+        file.close()
+
+print(f'gerando: {pathname}.tar.gz')
+with tarfile.open(f'{pathname}.tar.gz', "w:gz") as tar:
+        tar.add(pathname, arcname=os.path.basename(pathname))
