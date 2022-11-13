@@ -1,10 +1,11 @@
 import pandas as pd
 import os
 from os.path import isdir, join
+import random
 import subprocess
 import tarfile
 
-pathname = 'suicidedb'
+pathname = 'suicidedbmix'
 path = join(pathname)
 
 print(f'removendo: {pathname}')
@@ -26,8 +27,10 @@ xlsFiles = {
     'tweets_normalizados_2019.xlsx': {'sheetname': '2019_normalizados', 'category': train},
     'tweets_normalizados_2020.xlsx': {'sheetname': '2020_normalizados', 'category': test},
 }
+mixed = True
 
 labels = ['nocivo', 'protetor', 'geral']
+categories = [train, test]
 
 for filename, sn in xlsFiles.items():
     print(f'{filename}/{sn["sheetname"]} to {sn["category"]}')
@@ -38,7 +41,7 @@ for filename, sn in xlsFiles.items():
             continue
         
         classe = labels[int(idx_classe) - 1]
-        category = sn['category']
+        category = random.choice([train, test]) if mixed else sn['category']
         fpath = join(category, classe)
         if not isdir(fpath):
             os.mkdir(fpath)
